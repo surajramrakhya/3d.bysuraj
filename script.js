@@ -1,59 +1,33 @@
-// Get elements for lightbox
-const lightbox = document.querySelector('.lightbox');
-const lightboxContent = document.querySelector('.lightbox-content');
-const lightboxImage = document.querySelector('.lightbox-image');
-const lightboxVideo = document.querySelector('.lightbox-video');
-const closeBtn = document.querySelector('.lightbox-close');
-const backBtn = document.querySelector('.back-to-gallery');
+// Get all gallery images and videos
+const galleryItems = document.querySelectorAll('.gallery-item img, .gallery-item video');
 
-// Function to open lightbox with image
-function openLightbox(imageSrc) {
-  lightbox.style.display = 'block';
-  lightboxImage.style.display = 'block';
-  lightboxVideo.style.display = 'none';
-  lightboxImage.src = imageSrc;
-  lightboxImage.onload = () => lightboxContent.scrollTop = 0;
-}
+// Create lightbox container
+const lightbox = document.createElement('div');
+lightbox.classList.add('lightbox');
+document.body.appendChild(lightbox);
 
-// Function to open lightbox with video
-function openVideoLightbox(videoSrc) {
-  lightbox.style.display = 'block';
-  lightboxVideo.style.display = 'block';
-  lightboxImage.style.display = 'none';
-  const videoElement = document.createElement('video');
-  videoElement.setAttribute('controls', 'true');
-  videoElement.innerHTML = `<source src="${videoSrc}" type="video/mp4">Your browser does not support the video tag.`;
-  lightboxVideo.appendChild(videoElement);
-  videoElement.play();
-}
+// Create lightbox content container
+const lightboxContent = document.createElement('div');
+lightboxContent.classList.add('lightbox-content');
+lightbox.appendChild(lightboxContent);
 
-// Function to close the lightbox
-function closeLightbox() {
+// Close button
+const closeButton = document.createElement('button');
+closeButton.textContent = 'Close';
+closeButton.classList.add('close');
+lightboxContent.appendChild(closeButton);
+
+// Add event listener to close the lightbox
+closeButton.addEventListener('click', () => {
   lightbox.style.display = 'none';
-  lightboxImage.style.display = 'none';
-  lightboxVideo.style.display = 'none';
-  lightboxVideo.innerHTML = ''; // Remove the video element to stop playback
-}
+});
 
-// Function to navigate back to the gallery
-function backToGallery() {
-  lightbox.style.display = 'none';
-  lightboxVideo.innerHTML = ''; // Remove the video element when returning
-}
-
-// Add event listeners to gallery images and videos
-const galleryItems = document.querySelectorAll('.gallery-item img');
+// Open the clicked item in the lightbox
 galleryItems.forEach(item => {
-  item.addEventListener('click', () => openLightbox(item.src));
+  item.addEventListener('click', () => {
+    const clone = item.cloneNode(true);
+    lightboxContent.innerHTML = ''; // Clear previous content
+    lightboxContent.appendChild(clone); // Add the clicked item
+    lightbox.style.display = 'flex'; // Show the lightbox
+  });
 });
-
-const galleryVideos = document.querySelectorAll('.gallery-item video');
-galleryVideos.forEach(item => {
-  item.addEventListener('click', () => openVideoLightbox(item.src));
-});
-
-// Close lightbox on clicking the close button
-closeBtn.addEventListener('click', closeLightbox);
-
-// Navigate back to the gallery
-backBtn.addEventListener('click', backToGallery);
